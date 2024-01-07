@@ -1,0 +1,93 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>Standby</h1>
+    <p>Test reaction speed with just a phone or computer. This page will beep randomly within the parameters provided below. When it beeps, react. The par beep shows if the reaction was fast enough.</p>
+
+    <h2>Parameters</h2>
+    <label for="min">Min Standby (sec)</label>
+    <input type="text" id="min" value="120"><br><br>
+
+    <label for="max">Max Standup (sec)</label>
+    <input type="text" id="max" value="600"><br><br>
+
+    <label for="par">Par (sec)</label>
+    <input type="text" id="par" value="1.5"><br><br>
+
+    <input type="button" id="btn" onclick="handleStart()" value="Start!">
+
+    <p>Timer will wait a random amount of time between min and max, then beep. After par seconds, it will beep again and start a new timer</p>
+
+    <script>
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+      var isRunning = false;
+
+      // https://stackoverflow.com/a/29641185
+      // All arguments are optional:
+      //  duration of the tone in milliseconds. Default is 500
+      //  frequency of the tone in hertz. default is 440
+      //  volume of the tone. Default is 1, off is 0.
+      //  type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
+      //  callback to use on end of tone
+      function beep(duration, frequency, volume, type, callback) {
+            var oscillator = audioCtx.createOscillator();
+            var gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (volume){gainNode.gain.value = volume;}
+            if (frequency){oscillator.frequency.value = frequency;}
+            if (type){oscillator.type = type;}
+            if (callback){oscillator.onended = callback;}
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+      };
+
+      function goSignal() {
+          beep(115, 500, 0.5);
+      }
+
+      function parBeep() {
+          beep(115, 1000, 0.5);
+      }
+
+      function getRandomNumber(min, max) {
+          return Math.floor(Math.random() * (max - min) + min);
+      }
+
+      function handleStart() {
+          const btn = document.getElementById("btn");
+          if (isRunning) {
+            btn.value = "Start!";
+          } else {
+            btn.value = "Stop!";
+            runCycle();
+          }
+          isRunning = !isRunning;
+      }
+
+      function runCycle() {
+          const min = Number(document.getElementById("min").value);
+          const max = Number(document.getElementById("max").value);
+          const par = Number(document.getElementById("par").value);
+
+          const delay = getRandomNumber(min*1000, max*1000)
+          setTimeout(async () => {
+            goSignal();
+            await new Promise(r => setTimeout(r, par*1000));
+            parBeep();
+            if (isRunning) runCycle();
+          }, delay);
+
+          console.log(min);
+          console.log(max);
+          console.log(par);
+          console.log(delay);
+          console.log(isRunning);
+      }
+    </script>
+  </body>
+</html>
