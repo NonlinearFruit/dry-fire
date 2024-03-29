@@ -1,27 +1,59 @@
 <html>
   <head>
+    <link
+      rel="stylesheet"
+      media="(prefers-color-scheme:light)"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css"
+    />
+    <link
+      rel="stylesheet"
+      media="(prefers-color-scheme:dark)"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/dark.css"
+      onload="document.documentElement.classList.add('sl-theme-dark');"
+    />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
   </head>
   <body>
     <h1>Standby</h1>
     <p>Test reaction speed with just a phone or computer. This page will beep randomly within the parameters provided below. When it beeps, react. The par beep shows if the reaction was fast enough.</p>
 
-    <h2>Parameters</h2>
-    <label for="min">Min Standby (sec)</label>
-    <input type="text" id="min" value="120"><br><br>
-
-    <label for="max">Max Standup (sec)</label>
-    <input type="text" id="max" value="600"><br><br>
-
-    <label for="par">Par (sec)</label>
-    <input type="text" id="par" value="1.5"><br><br>
-
-    <input type="button" id="btn" onclick="handleStart()" value="Start!">
-
     <p>Timer will wait a random amount of time between min and max, then beep. After par seconds, it will beep again and start a new timer</p>
+
+    <sl-card class="card-header">
+      <sl-input type="number" id="min" label="Min Standby (sec)" help-text="The minimum pause between the par beep and the start beep" value="120"></sl-input>
+      <sl-input type="number" id="max" label="Max Standby (sec)" help-text="The maximum pause between the par beep and the start beep" value="600"></sl-input>
+      <sl-input type="number" id="par" label="Par (sec)" help-text="The pause between the start beep and the par beep" value="1.5"></sl-input>
+
+      <div slot="footer">
+        <sl-button id="start" variant="primary" onclick="handleStart()">Start</sl-button>
+        <sl-button id="stop" variant="normal" onclick="handleStop()" disabled>Stop</sl-button>
+      </div>
+    </sl-card>
+
+    <style>
+      .card-header {
+            max-width: 300px;
+              }
+
+        .card-header [slot='header'] {
+              display: flex;
+                  align-items: center;
+                      justify-content: space-between;
+                        }
+
+          .card-header h3 {
+                margin: 0;
+                  }
+
+            .card-header sl-icon-button {
+                  font-size: var(--sl-font-size-medium);
+                    }
+    </style>
 
     <script>
       var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
       var isRunning = false;
+      var isDebug = true;
 
       // https://stackoverflow.com/a/29641185
       // All arguments are optional:
@@ -47,10 +79,12 @@
       };
 
       function goSignal() {
+          log("go signal about to beep");
           beep(115, 500, 0.5);
       }
 
       function parBeep() {
+          log("par about to beep");
           beep(115, 1000, 0.5);
       }
 
@@ -59,22 +93,34 @@
       }
 
       function handleStart() {
-          const btn = document.getElementById("btn");
-          if (isRunning) {
-            btn.value = "Start!";
-          } else {
-            btn.value = "Stop!";
-            runCycle();
-          }
-          isRunning = !isRunning;
+          const start = document.getElementById("start");
+          const stop = document.getElementById("stop");
+          start.toggleAttribute("disabled");
+          stop.toggleAttribute("disabled");
+          isRunning = true;
+          runCycle();
+      }
+
+      function handleStop() {
+          const start = document.getElementById("start");
+          const stop = document.getElementById("stop");
+          start.toggleAttribute("disabled");
+          stop.toggleAttribute("disabled");
+          isRunning = false;
       }
 
       function runCycle() {
+          log("Running another cycle");
           const min = Number(document.getElementById("min").value);
           const max = Number(document.getElementById("max").value);
           const par = Number(document.getElementById("par").value);
-
           const delay = getRandomNumber(min*1000, max*1000)
+
+          log("  Min: "+min);
+          log("  Max: "+max);
+          log("  Par: "+par);
+          log("  Delay: "+delay);
+
           setTimeout(async () => {
             goSignal();
             await new Promise(r => setTimeout(r, par*1000));
@@ -82,11 +128,13 @@
             if (isRunning) runCycle();
           }, delay);
 
-          console.log(min);
-          console.log(max);
-          console.log(par);
-          console.log(delay);
-          console.log(isRunning);
+          log("  isRunning: "+isRunning);
+      }
+
+      function log(msg) {
+        if (isDebug) {
+          console.log(msg);
+        }
       }
     </script>
   </body>
