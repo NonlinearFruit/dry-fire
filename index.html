@@ -14,22 +14,52 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
   </head>
   <body>
-    <h1>Dry Fire</h1>
-    <p>Test reaction speed with just a phone or computer. This page will beep randomly within the parameters provided below. When it beeps, react. The par beep shows if the reaction was fast enough.</p>
 
-    <p>Timer will wait a random amount of time between min and max, then beep. After par seconds, it will beep again and start a new timer</p>
+    <div class="title">
+      <h1>Dry Fire</h1>
+    </div>
 
-    <sl-card class="card-header">
-      <sl-input type="number" id="min" label="Min Standby (sec)" help-text="The minimum pause between the par beep and the start beep" value="120"></sl-input>
-      <sl-input type="number" id="max" label="Max Standby (sec)" help-text="The maximum pause between the par beep and the start beep" value="600"></sl-input>
-      <sl-input type="number" id="par" label="Par (sec)" help-text="The pause between the start beep and the par beep" value="1.5"></sl-input>
+    <div class="description">
+      <p>Test reaction speed with just a phone or computer. This page will beep randomly within the parameters provided below. When it beeps, react. The par beep shows if the reaction was fast enough.</p>
 
-      <div slot="footer">
-        <sl-button id="start" variant="primary" onclick="handleStart()">Start</sl-button>
-        <sl-button id="stop" variant="normal" onclick="handleStop()" disabled>Stop</sl-button>
-      </div>
-    </sl-card>
+      <p>Timer will wait a random amount of time between min and max, then beep. After par seconds, it will beep again and start a new timer</p>
+    </div>
 
+    <div class="settings">
+      <sl-card class="card-header">
+        <sl-input type="number" id="min" label="Min Standby (sec)" help-text="The minimum pause between the par beep and the start beep" value="120"></sl-input>
+        <sl-input type="number" id="max" label="Max Standby (sec)" help-text="The maximum pause between the par beep and the start beep" value="600"></sl-input>
+        <sl-input type="number" id="par" label="Par (sec)" help-text="The pause between the start beep and the par beep" value="1.5"></sl-input>
+
+        <div slot="footer">
+          <sl-button id="start" variant="primary" onclick="handleStart()">Start</sl-button>
+          <sl-button id="stop" variant="normal" onclick="handleStop()" disabled>Stop</sl-button>
+        </div>
+      </sl-card>
+    </div>
+
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-rows: 1fr auto auto auto 2fr;
+        justify-items: center;
+      }
+      .title {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+      }
+      .description {
+        grid-column: 2 / 3;
+        grid-row: 3 / 4;
+        width:0;
+        min-width:100%;
+      }
+      .settings {
+        grid-column: 2 / 3;
+        grid-row: 4 / 5;
+      }
+    </style>
     <script>
       var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
       var isRunning = false;
