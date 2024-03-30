@@ -30,53 +30,10 @@
       </div>
     </sl-card>
 
-    <style>
-      .card-header {
-            max-width: 300px;
-              }
-
-        .card-header [slot='header'] {
-              display: flex;
-                  align-items: center;
-                      justify-content: space-between;
-                        }
-
-          .card-header h3 {
-                margin: 0;
-                  }
-
-            .card-header sl-icon-button {
-                  font-size: var(--sl-font-size-medium);
-                    }
-    </style>
-
     <script>
       var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
       var isRunning = false;
       var isDebug = true;
-
-      // https://stackoverflow.com/a/29641185
-      // All arguments are optional:
-      //  duration of the tone in milliseconds. Default is 500
-      //  frequency of the tone in hertz. default is 440
-      //  volume of the tone. Default is 1, off is 0.
-      //  type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
-      //  callback to use on end of tone
-      function beep(duration, frequency, volume, type, callback) {
-            var oscillator = audioCtx.createOscillator();
-            var gainNode = audioCtx.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            if (volume){gainNode.gain.value = volume;}
-            if (frequency){oscillator.frequency.value = frequency;}
-            if (type){oscillator.type = type;}
-            if (callback){oscillator.onended = callback;}
-            
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
-      };
 
       function goSignal() {
           log("go signal about to beep");
@@ -136,6 +93,29 @@
           console.log(msg);
         }
       }
+
+      // https://stackoverflow.com/a/29641185
+      // All arguments are optional:
+      //  duration of the tone in milliseconds. Default is 500
+      //  frequency of the tone in hertz. default is 440
+      //  volume of the tone. Default is 1, off is 0.
+      //  type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
+      //  callback to use on end of tone
+      function beep(duration, frequency, volume, type, callback) {
+            var oscillator = audioCtx.createOscillator();
+            var gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (volume){gainNode.gain.value = volume;}
+            if (frequency){oscillator.frequency.value = frequency;}
+            if (type){oscillator.type = type;}
+            if (callback){oscillator.onended = callback;}
+
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+      };
     </script>
   </body>
 </html>
